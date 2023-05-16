@@ -12,7 +12,7 @@ Snackoverflow is a simple REST API for a stackoverflow-like website
 
 ## Database structure
 
-[//]: # (TODO: Add database structure)
+![Database structure](./doc/snackoverflow.png)
 
 ## API endpoints
 
