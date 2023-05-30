@@ -11,6 +11,8 @@ import tech.kaloyan.snackoverflow.controller.resources.Req.RatedReq;
 import tech.kaloyan.snackoverflow.controller.resources.Resp.RatedResp;
 import tech.kaloyan.snackoverflow.entity.Rated;
 
+import java.util.List;
+
 @Mapper
 public interface RatedMapper {
     RatedMapper MAPPER = Mappers.getMapper(RatedMapper.class);
@@ -23,4 +25,6 @@ public interface RatedMapper {
     @Mapping(target="question.id", source="questionId")
     @Mapping(target="user.id", source="userId")
     Rated toRated(RatedReq ratedReq);
+
+    List<RatedResp> toRatedResps(List<Rated> ratedList);
 }

@@ -7,6 +7,7 @@ package tech.kaloyan.snackoverflow.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+import tech.kaloyan.snackoverflow.controller.resources.Req.QuestionReq;
 import tech.kaloyan.snackoverflow.controller.resources.Resp.QuestionResp;
 import tech.kaloyan.snackoverflow.entity.Question;
 import tech.kaloyan.snackoverflow.entity.Rated;
@@ -26,7 +27,7 @@ public interface QuestionMapper {
     @Mapping(target = "author.id", source = "authorId")
     @Mapping(target = "image.url", source = "images.url")
     @Mapping(target = "image.alt", source = "images.alt")
-    Question toQuestion(QuestionResp questionReq);
+    Question toQuestion(QuestionReq questionReq);
 
     default Double getRating(Question question) {
         return question.getRated().stream().mapToDouble(Rated::getRating).average().orElse(0.0);

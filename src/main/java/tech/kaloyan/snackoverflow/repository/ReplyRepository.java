@@ -8,6 +8,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import tech.kaloyan.snackoverflow.entity.Reply;
 
+import java.util.List;
+
 @Repository
 public interface ReplyRepository extends JpaRepository<Reply, String> {
+    List<Reply> findAllByAuthorId(String authorId);
+    List<Reply> findAllByCommentId(String commentId);
 }

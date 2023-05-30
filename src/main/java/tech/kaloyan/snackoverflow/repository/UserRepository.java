@@ -10,4 +10,5 @@ import tech.kaloyan.snackoverflow.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
+    User findByUsername(String username);
 }

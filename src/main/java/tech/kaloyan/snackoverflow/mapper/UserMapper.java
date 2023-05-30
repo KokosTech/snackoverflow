@@ -41,4 +41,6 @@ public interface UserMapper {
     default List<ReplyResp> getReplies(User user) {
         return ReplyMapper.MAPPER.toReplyResps(user.getReply());
     }
+
+    List<UserResp> toUserRespList(List<User> users);
 }
