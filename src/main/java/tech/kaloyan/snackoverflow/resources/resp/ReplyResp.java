@@ -2,13 +2,14 @@
  * Copyright (c) 2023. Kaloyan Doychinov
  */
 
-package tech.kaloyan.snackoverflow.controller.resources.Req;
+package tech.kaloyan.snackoverflow.resources.resp;
 
 import lombok.Data;
 
 @Data
-public class ReplyReq {
+public class ReplyResp {
+    private String id;
     private String text;
-    private String authorId;
+    private UserResp author;
     private String commentId;
 }

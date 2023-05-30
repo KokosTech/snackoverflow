@@ -2,7 +2,7 @@
  * Copyright (c) 2023. Kaloyan Doychinov
  */
 
-package tech.kaloyan.snackoverflow.controller.resources.Req;
+package tech.kaloyan.snackoverflow.resources.req;
 
 import lombok.Data;
 

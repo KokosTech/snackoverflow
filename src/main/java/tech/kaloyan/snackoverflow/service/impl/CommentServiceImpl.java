@@ -6,8 +6,8 @@ package tech.kaloyan.snackoverflow.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tech.kaloyan.snackoverflow.controller.resources.Req.CommentReq;
-import tech.kaloyan.snackoverflow.controller.resources.Resp.CommentResp;
+import tech.kaloyan.snackoverflow.resources.req.CommentReq;
+import tech.kaloyan.snackoverflow.resources.resp.CommentResp;
 import tech.kaloyan.snackoverflow.entity.Comment;
 import tech.kaloyan.snackoverflow.repository.CommentRepository;
 import tech.kaloyan.snackoverflow.service.CommentService;

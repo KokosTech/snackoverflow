@@ -6,10 +6,14 @@ package tech.kaloyan.snackoverflow.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tech.kaloyan.snackoverflow.controller.resources.Req.QuestionReq;
-import tech.kaloyan.snackoverflow.controller.resources.Resp.QuestionResp;
+import tech.kaloyan.snackoverflow.entity.Image;
+import tech.kaloyan.snackoverflow.repository.ImageRepository;
+import tech.kaloyan.snackoverflow.resources.req.ImageReq;
+import tech.kaloyan.snackoverflow.resources.req.QuestionReq;
+import tech.kaloyan.snackoverflow.resources.resp.QuestionResp;
 import tech.kaloyan.snackoverflow.entity.Question;
 import tech.kaloyan.snackoverflow.repository.QuestionRepository;
+import tech.kaloyan.snackoverflow.repository.UserRepository;
 import tech.kaloyan.snackoverflow.service.QuestionService;
 
 import java.util.List;
@@ -21,6 +25,7 @@ import static tech.kaloyan.snackoverflow.mapper.QuestionMapper.MAPPER;
 @RequiredArgsConstructor
 public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
+    private final ImageRepository imageRepository;
 
     @Override
     public List<QuestionResp> getAll() {
@@ -39,7 +44,17 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public Question save(QuestionReq questionReq) {
-        return questionRepository.save(MAPPER.toQuestion(questionReq));
+        Question question = MAPPER.toQuestion(questionReq);
+        List<Image> images = question.getImage();
+        question.setImage(null);
+        question = questionRepository.save(question);
+
+        for (Image image : images) {
+            image.setQuestion(question);
+            imageRepository.save(image);
+        }
+
+        return question;
     }
 
     @Override

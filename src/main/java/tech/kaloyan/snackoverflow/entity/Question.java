@@ -7,8 +7,10 @@ package tech.kaloyan.snackoverflow.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.envers.Audited;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+import javax.validation.constraints.Null;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
@@ -19,6 +21,7 @@ import static jakarta.persistence.GenerationType.UUID;
 @Data
 @Table
 @Audited
+@EnableJpaAuditing
 public class Question {
     @Id
     @GeneratedValue(strategy = UUID)
@@ -31,14 +34,16 @@ public class Question {
     @Lob
     private String description;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
+    @CreatedDate
     private Calendar createdOn;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
+    @Column(nullable = true)
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> image;
 

@@ -7,8 +7,8 @@ package tech.kaloyan.snackoverflow.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
-import tech.kaloyan.snackoverflow.controller.resources.Req.RatedReq;
-import tech.kaloyan.snackoverflow.controller.resources.Resp.RatedResp;
+import tech.kaloyan.snackoverflow.resources.req.RatedReq;
+import tech.kaloyan.snackoverflow.resources.resp.RatedResp;
 import tech.kaloyan.snackoverflow.entity.Rated;
 
 import java.util.List;

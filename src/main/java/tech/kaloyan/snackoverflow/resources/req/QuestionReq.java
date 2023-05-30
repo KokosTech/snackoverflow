@@ -2,16 +2,16 @@
  * Copyright (c) 2023. Kaloyan Doychinov
  */
 
-package tech.kaloyan.snackoverflow.controller.resources.Req;
+package tech.kaloyan.snackoverflow.resources.req;
 
 import lombok.Data;
 
-import java.util.Map;
+import java.util.List;
 
 @Data
 public class QuestionReq {
     String title;
     String description;
     String authorId;
-    Map<String, String> images; // url and alt
+    List<ImageReq> images;
 }

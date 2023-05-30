@@ -7,8 +7,9 @@ package tech.kaloyan.snackoverflow.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
-import tech.kaloyan.snackoverflow.controller.resources.Resp.*;
 import tech.kaloyan.snackoverflow.entity.User;
+import tech.kaloyan.snackoverflow.resources.req.UserSignupReq;
+import tech.kaloyan.snackoverflow.resources.resp.*;
 
 import java.util.List;
 
@@ -17,14 +18,16 @@ public interface UserMapper {
     UserMapper MAPPER = Mappers.getMapper(UserMapper.class);
 
     @Mapping(target = "questions", expression = "java(getQuestions(user))")
-    UserResp toUserResp(User user);
+    UserAccountResp toUserResp(User user);
 
     @Mapping(target = "lastLogin", expression = "java(user.getLastLogin().getTime().toString())")
     @Mapping(target = "questions", expression = "java(getQuestions(user))")
     @Mapping(target = "saved", expression = "java(getSaved(user))")
     @Mapping(target = "comments", expression = "java(getComments(user))")
-    @Mapping(target = "reply", expression = "java(getReplies(user))")
+    @Mapping(target = "replies", expression = "java(getReplies(user))")
     AuthUserResp toAuthUserResp(User user);
+
+    User toUser(UserSignupReq userReq);
 
     default List<QuestionResp> getQuestions(User user) {
         return QuestionMapper.MAPPER.toQuestionResps(user.getQuestions());
@@ -42,5 +45,5 @@ public interface UserMapper {
         return ReplyMapper.MAPPER.toReplyResps(user.getReply());
     }
 
-    List<UserResp> toUserRespList(List<User> users);
+    List<UserAccountResp> toUserRespList(List<User> users);
 }

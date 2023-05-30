@@ -6,8 +6,8 @@ package tech.kaloyan.snackoverflow.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tech.kaloyan.snackoverflow.controller.resources.Req.SavedReq;
-import tech.kaloyan.snackoverflow.controller.resources.Resp.SavedResp;
+import tech.kaloyan.snackoverflow.resources.req.SavedReq;
+import tech.kaloyan.snackoverflow.resources.resp.SavedResp;
 import tech.kaloyan.snackoverflow.entity.Saved;
 import tech.kaloyan.snackoverflow.repository.SavedRepository;
 import tech.kaloyan.snackoverflow.service.SavedService;

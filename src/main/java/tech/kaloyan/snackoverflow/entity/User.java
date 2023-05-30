@@ -34,11 +34,11 @@ public class User {
     @Column(nullable = false, length = 256)
     private String passhash;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
     private Calendar createdOn;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
     private Calendar lastLogin;
 

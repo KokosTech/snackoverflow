@@ -6,8 +6,8 @@ package tech.kaloyan.snackoverflow.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tech.kaloyan.snackoverflow.controller.resources.Req.RatedReq;
-import tech.kaloyan.snackoverflow.controller.resources.Resp.RatedResp;
+import tech.kaloyan.snackoverflow.resources.req.RatedReq;
+import tech.kaloyan.snackoverflow.resources.resp.RatedResp;
 import tech.kaloyan.snackoverflow.entity.Rated;
 import tech.kaloyan.snackoverflow.repository.RatedRepository;
 import tech.kaloyan.snackoverflow.service.RatedService;

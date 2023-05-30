@@ -7,8 +7,8 @@ package tech.kaloyan.snackoverflow.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
-import tech.kaloyan.snackoverflow.controller.resources.Req.SavedReq;
-import tech.kaloyan.snackoverflow.controller.resources.Resp.SavedResp;
+import tech.kaloyan.snackoverflow.resources.req.SavedReq;
+import tech.kaloyan.snackoverflow.resources.resp.SavedResp;
 import tech.kaloyan.snackoverflow.entity.Saved;
 
 import java.util.List;

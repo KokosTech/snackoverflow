@@ -4,8 +4,8 @@
 
 package tech.kaloyan.snackoverflow.service;
 
-import tech.kaloyan.snackoverflow.controller.resources.Req.RatedReq;
-import tech.kaloyan.snackoverflow.controller.resources.Resp.RatedResp;
+import tech.kaloyan.snackoverflow.resources.req.RatedReq;
+import tech.kaloyan.snackoverflow.resources.resp.RatedResp;
 import tech.kaloyan.snackoverflow.entity.Rated;
 
 import java.util.List;

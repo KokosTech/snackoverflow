@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2023. Kaloyan Doychinov
+ */
+
 package tech.kaloyan.snackoverflow;
 
 import org.springframework.boot.SpringApplication;

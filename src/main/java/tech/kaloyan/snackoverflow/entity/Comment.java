@@ -26,7 +26,7 @@ public class Comment {
     @Lob
     private String content;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
     private java.util.Calendar createdOn;

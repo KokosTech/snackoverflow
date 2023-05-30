@@ -2,12 +2,12 @@
  * Copyright (c) 2023. Kaloyan Doychinov
  */
 
-package tech.kaloyan.snackoverflow.controller.resources.Resp;
+package tech.kaloyan.snackoverflow.resources.resp;
 
 import lombok.Data;
 
 import java.util.Calendar;
-import java.util.Map;
+import java.util.List;
 
 @Data
 public class QuestionResp {
@@ -15,7 +15,7 @@ public class QuestionResp {
     private String title;
     private String description;
     private Calendar createdOn;
-    private Map<String, String> author; // id, username
-    private Map<String, String> image; // url, alt
+    private UserResp author;
+    private List<ImageResp> images;
     private Double rating;
 }

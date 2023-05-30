@@ -2,10 +2,9 @@
  * Copyright (c) 2023. Kaloyan Doychinov
  */
 
-package tech.kaloyan.snackoverflow.controller.resources.Resp;
+package tech.kaloyan.snackoverflow.resources.resp;
 
 import lombok.Data;
-import tech.kaloyan.snackoverflow.entity.Rated;
 
 import java.util.List;
 

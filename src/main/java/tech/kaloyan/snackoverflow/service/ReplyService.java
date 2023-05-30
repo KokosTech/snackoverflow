@@ -4,8 +4,8 @@
 
 package tech.kaloyan.snackoverflow.service;
 
-import tech.kaloyan.snackoverflow.controller.resources.Req.ReplyReq;
-import tech.kaloyan.snackoverflow.controller.resources.Resp.ReplyResp;
+import tech.kaloyan.snackoverflow.resources.req.ReplyReq;
+import tech.kaloyan.snackoverflow.resources.resp.ReplyResp;
 import tech.kaloyan.snackoverflow.entity.Reply;
 
 import java.util.List;

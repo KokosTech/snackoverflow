@@ -4,8 +4,8 @@
 
 package tech.kaloyan.snackoverflow.service;
 
-import tech.kaloyan.snackoverflow.controller.resources.Req.CommentReq;
-import tech.kaloyan.snackoverflow.controller.resources.Resp.CommentResp;
+import tech.kaloyan.snackoverflow.resources.req.CommentReq;
+import tech.kaloyan.snackoverflow.resources.resp.CommentResp;
 import tech.kaloyan.snackoverflow.entity.Comment;
 
 import java.util.List;
