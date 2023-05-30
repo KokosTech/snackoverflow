@@ -6,6 +6,9 @@ package tech.kaloyan.snackoverflow.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.envers.Audited;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.util.Collection;
 import java.util.List;
@@ -13,6 +16,7 @@ import java.util.List;
 @Entity
 @Data
 @Table
+@Audited
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -24,6 +28,7 @@ public class Comment {
 
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
+    @CreatedDate
     private java.util.Calendar createdOn;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

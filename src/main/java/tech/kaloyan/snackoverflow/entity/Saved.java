@@ -6,10 +6,13 @@ package tech.kaloyan.snackoverflow.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.envers.Audited;
+import org.springframework.data.annotation.CreatedDate;
 
 @Entity
 @Data
 @Table
+@Audited
 public class Saved {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -17,6 +20,7 @@ public class Saved {
 
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
+    @CreatedDate
     private java.util.Calendar savedOn;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

@@ -6,6 +6,8 @@ package tech.kaloyan.snackoverflow.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.envers.Audited;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -17,6 +19,7 @@ import static jakarta.persistence.GenerationType.UUID;
 @Entity
 @Data
 @Table
+@Audited
 public class User {
     @Id
     @GeneratedValue(strategy = UUID)

@@ -6,10 +6,12 @@ package tech.kaloyan.snackoverflow.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.envers.Audited;
 
 @Entity
 @Data
 @Table
+@Audited
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
