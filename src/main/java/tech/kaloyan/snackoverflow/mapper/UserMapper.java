@@ -18,7 +18,9 @@ public interface UserMapper {
     UserMapper MAPPER = Mappers.getMapper(UserMapper.class);
 
     @Mapping(target = "questions", expression = "java(getQuestions(user))")
-    UserAccountResp toUserResp(User user);
+    UserAccountResp toUserAccountResp(User user);
+
+    UserResp toUserResp(User user);
 
     @Mapping(target = "lastLogin", expression = "java(user.getLastLogin().getTime().toString())")
     @Mapping(target = "questions", expression = "java(getQuestions(user))")

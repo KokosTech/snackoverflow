@@ -30,7 +30,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<UserAccountResp> getById(String id) {
-        return userRepository.findById(id).map(MAPPER::toUserResp);
+        return userRepository.findById(id).map(MAPPER::toUserAccountResp);
+    }
+
+    @Override
+    public Optional<UserAccountResp> getByUsername(String username) {
+        return userRepository.findByUsername(username).map(MAPPER::toUserAccountResp);
+    }
+
+    @Override
+    public Optional<UserAccountResp> getByEmail(String email) {
+        return userRepository.findByEmail(email).map(MAPPER::toUserAccountResp);
+    }
+
+    @Override
+    public Optional<UserAccountResp> getByUsernameOrEmail(String username, String email) {
+        return userRepository.findByUsernameOrEmail(username, email).map(MAPPER::toUserAccountResp);
     }
 
     @Override

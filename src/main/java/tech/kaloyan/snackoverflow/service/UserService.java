@@ -14,6 +14,9 @@ import java.util.Optional;
 public interface UserService {
     List<UserAccountResp> getAll();
     Optional<UserAccountResp> getById(String id);
+    Optional<UserAccountResp> getByUsername(String username);
+    Optional<UserAccountResp> getByEmail(String email);
+    Optional<UserAccountResp> getByUsernameOrEmail(String username, String email);
 
     User save(UserSignupReq user);
     User update(User user);
