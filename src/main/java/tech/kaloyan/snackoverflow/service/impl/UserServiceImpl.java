@@ -29,6 +29,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<User> getUserById(String id) {
+        return userRepository.findById(id);
+    }
+
+    @Override
     public Optional<UserAccountResp> getById(String id) {
         return userRepository.findById(id).map(MAPPER::toUserAccountResp);
     }

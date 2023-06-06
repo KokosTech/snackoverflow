@@ -13,6 +13,7 @@ import java.util.Optional;
 
 public interface UserService {
     List<UserAccountResp> getAll();
+    Optional<User> getUserById(String id);
     Optional<UserAccountResp> getById(String id);
     Optional<UserAccountResp> getByUsername(String username);
     Optional<UserAccountResp> getByEmail(String email);
