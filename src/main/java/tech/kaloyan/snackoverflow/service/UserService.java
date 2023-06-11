@@ -20,6 +20,6 @@ public interface UserService {
     Optional<UserAccountResp> getByUsernameOrEmail(String username, String email);
 
     User save(UserSignupReq user);
-    User update(User user);
-    void delete(String id);
+    User update(String id, UserSignupReq user, User currentUser);
+    void delete(String id, User currentUser);
 }

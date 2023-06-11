@@ -4,6 +4,7 @@
 
 package tech.kaloyan.snackoverflow.service;
 
+import tech.kaloyan.snackoverflow.entity.User;
 import tech.kaloyan.snackoverflow.resources.req.SavedReq;
 import tech.kaloyan.snackoverflow.resources.resp.SavedResp;
 import tech.kaloyan.snackoverflow.entity.Saved;
@@ -17,6 +18,6 @@ public interface SavedService {
     List<SavedResp> getAllByQuestionId(String questionId);
     Optional<SavedResp> getById(String id);
 
-    Saved save(SavedReq saved);
-    void delete(String id);
+    Saved save(SavedReq saved, User currentUser);
+    void delete(String id, User currentUser);
 }

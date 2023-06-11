@@ -4,13 +4,17 @@
 
 package tech.kaloyan.snackoverflow.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tech.kaloyan.snackoverflow.entity.User;
+import tech.kaloyan.snackoverflow.exeception.NotAuthorizedException;
 import tech.kaloyan.snackoverflow.repository.UserRepository;
 import tech.kaloyan.snackoverflow.resources.req.UserSignupReq;
 import tech.kaloyan.snackoverflow.resources.resp.UserAccountResp;
+import tech.kaloyan.snackoverflow.service.JWTService;
 import tech.kaloyan.snackoverflow.service.UserService;
 
 import java.util.List;
@@ -22,6 +26,7 @@ import static tech.kaloyan.snackoverflow.mapper.UserMapper.MAPPER;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     final UserRepository userRepository;
+    final PasswordEncoder passwordEncoder;
 
     @Override
     public List<UserAccountResp> getAll() {
@@ -61,12 +66,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User update(User user) {
-        return userRepository.save(user);
+    public User update(String id, UserSignupReq user, User currentUser){
+        if (!id.equals(currentUser.getId())) {
+            throw new NotAuthorizedException("User is not authorized to update another user");
+        }
+
+        User userToUpdate = userRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("User with id " + id + " not found")
+        );
+
+        if(user.getUsername() != null && !user.getUsername().isEmpty()) {
+            userToUpdate.setUsername(user.getUsername());
+        }
+
+        if (user.getEmail() != null && !user.getEmail().isEmpty()) {
+            userToUpdate.setEmail(user.getEmail());
+        }
+
+        if(user.getPassword() != null && !user.getPassword().isEmpty()) {
+            userToUpdate.setPasshash(passwordEncoder.encode(user.getPassword()));
+        }
+
+        return userRepository.save(userToUpdate);
     }
 
     @Override
-    public void delete(String id) {
+    public void delete(String id, User currentUser) {
+        if (!id.equals(currentUser.getId())) {
+            throw new NotAuthorizedException("User is not authorized to delete another user");
+        }
+
         userRepository.deleteById(id);
     }
 }

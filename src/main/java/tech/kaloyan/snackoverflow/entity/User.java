@@ -8,6 +8,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.envers.Audited;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -20,7 +22,7 @@ import static jakarta.persistence.GenerationType.UUID;
 @Data
 @Table
 @Audited
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = UUID)
     private String id;
@@ -57,4 +59,33 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Saved> saved;
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
+    @Override
+    public String getPassword() {
+        return passhash;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }

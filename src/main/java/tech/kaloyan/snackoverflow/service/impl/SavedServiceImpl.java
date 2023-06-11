@@ -6,6 +6,8 @@ package tech.kaloyan.snackoverflow.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import tech.kaloyan.snackoverflow.entity.User;
+import tech.kaloyan.snackoverflow.exeception.NotAuthorizedException;
 import tech.kaloyan.snackoverflow.resources.req.SavedReq;
 import tech.kaloyan.snackoverflow.resources.resp.SavedResp;
 import tech.kaloyan.snackoverflow.entity.Saved;
@@ -42,12 +44,25 @@ public class SavedServiceImpl implements SavedService {
     }
 
     @Override
-    public Saved save(SavedReq savedReq) {
+    public Saved save(SavedReq savedReq, User currentUser) {
+        if (savedReq.getUserId() == null) {
+            savedReq.setUserId(currentUser.getId());
+        } else if (!savedReq.getUserId().equals(currentUser.getId())) {
+            throw new NotAuthorizedException("User is not authorized to create saved for another user");
+        }
+
         return savedRepository.save(MAPPER.toSaved(savedReq));
     }
 
     @Override
-    public void delete(String id) {
+    public void delete(String id, User currentUser) {
+        Optional<Saved> saved = savedRepository.findById(id);
+        if (saved.isEmpty()) {
+            throw new NotAuthorizedException("User is not authorized to delete saved for another user");
+        } else if (!saved.get().getUser().getId().equals(currentUser.getId())) {
+            throw new NotAuthorizedException("User is not authorized to delete saved for another user");
+        }
+
         savedRepository.deleteById(id);
     }
 }

@@ -6,10 +6,14 @@ package tech.kaloyan.snackoverflow.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
+import tech.kaloyan.snackoverflow.entity.Rated;
+import tech.kaloyan.snackoverflow.entity.User;
+import tech.kaloyan.snackoverflow.exeception.NotAuthorizedException;
+import tech.kaloyan.snackoverflow.repository.QuestionRepository;
+import tech.kaloyan.snackoverflow.repository.RatedRepository;
 import tech.kaloyan.snackoverflow.resources.req.RatedReq;
 import tech.kaloyan.snackoverflow.resources.resp.RatedResp;
-import tech.kaloyan.snackoverflow.entity.Rated;
-import tech.kaloyan.snackoverflow.repository.RatedRepository;
 import tech.kaloyan.snackoverflow.service.RatedService;
 
 import java.util.List;
@@ -21,6 +25,7 @@ import static tech.kaloyan.snackoverflow.mapper.RatedMapper.MAPPER;
 @RequiredArgsConstructor
 public class RatedServiceImpl implements RatedService {
     private final RatedRepository ratedRepository;
+    private final QuestionRepository questionRepository;
 
     @Override
     public List<RatedResp> getAll() {
@@ -43,21 +48,36 @@ public class RatedServiceImpl implements RatedService {
     }
 
     @Override
-    public Rated save(RatedReq ratedReq) {
+    public Rated save(RatedReq ratedReq, User currentUser) {
+        if (ratedReq.getUserId() == null) {
+            ratedReq.setUserId(currentUser.getId());
+        } else if (!ratedReq.getUserId().equals(currentUser.getId())) {
+            throw new NotAuthorizedException("User is not authorized to create rated for another user");
+        }
+
+        if (questionRepository.findById(ratedReq.getQuestionId()).isEmpty()) {
+            throw new NotFoundException("Question with id " + ratedReq.getQuestionId() + " not found");
+        }
+
+
+        Optional<Rated> rated = ratedRepository.findByUserIdAndQuestionId(ratedReq.getUserId(), ratedReq.getQuestionId());
+        if (rated.isPresent()) {
+            rated.get().setRating(ratedReq.getRating());
+            return ratedRepository.save(rated.get());
+        }
+
         return ratedRepository.save(MAPPER.toRated(ratedReq));
     }
 
     @Override
-    public Rated update(String id, RatedReq ratedReq) {
-        Rated rated = ratedRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Rated with id " + id + " not found")
-        );
-        rated.setRating(ratedReq.getRating());
-        return ratedRepository.save(rated);
-    }
+    public void delete(String id, User currentUser) {
+        if (
+                ratedRepository.findById(id).isEmpty() ||
+                        !ratedRepository.findById(id).get().getUser().getId().equals(currentUser.getId())
+        ) {
+            throw new NotAuthorizedException("User is not authorized to delete this rated");
+        }
 
-    @Override
-    public void delete(String id) {
         ratedRepository.deleteById(id);
     }
 }

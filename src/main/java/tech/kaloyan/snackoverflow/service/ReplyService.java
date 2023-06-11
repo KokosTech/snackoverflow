@@ -4,6 +4,7 @@
 
 package tech.kaloyan.snackoverflow.service;
 
+import tech.kaloyan.snackoverflow.entity.User;
 import tech.kaloyan.snackoverflow.resources.req.ReplyReq;
 import tech.kaloyan.snackoverflow.resources.resp.ReplyResp;
 import tech.kaloyan.snackoverflow.entity.Reply;
@@ -17,7 +18,7 @@ public interface ReplyService {
     List<ReplyResp> getAllByCommentId(String commentId);
     Optional<ReplyResp> getById(String id);
 
-    Reply save(ReplyReq replyReq);
-    Reply update(String id, ReplyReq replyReq);
-    void delete(String id);
+    Reply save(ReplyReq replyReq, User currentUser);
+    Reply update(String id, ReplyReq replyReq, User currentUser);
+    void delete(String id, User currentUser);
 }

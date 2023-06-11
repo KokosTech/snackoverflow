@@ -4,8 +4,11 @@
 
 package tech.kaloyan.snackoverflow.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import tech.kaloyan.snackoverflow.entity.User;
+import tech.kaloyan.snackoverflow.exeception.NotAuthorizedException;
 import tech.kaloyan.snackoverflow.resources.req.CommentReq;
 import tech.kaloyan.snackoverflow.resources.resp.CommentResp;
 import tech.kaloyan.snackoverflow.entity.Comment;
@@ -43,21 +46,40 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment save(CommentReq commentReq) {
+    public Comment save(CommentReq commentReq, User currentUser) {
+        if (commentReq.getAuthorId() == null) {
+            commentReq.setAuthorId(currentUser.getId());
+        } else if (!commentReq.getAuthorId().equals(currentUser.getId())) {
+            throw new NotAuthorizedException("User is not authorized to create comment for another user");
+        }
+
         return commentRepository.save(MAPPER.toComment(commentReq));
     }
 
     @Override
-    public Comment update(String id, CommentReq commentReq) {
+    public Comment update(String id, CommentReq commentReq, User currentUser) {
         Comment comment = commentRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Comment with id " + id + " not found")
+                () -> new EntityNotFoundException("Comment with id " + id + " not found")
         );
+
+        if (!comment.getAuthor().getId().equals(currentUser.getId())) {
+            throw new NotAuthorizedException("User is not authorized to update comment for another user");
+        }
+
         comment.setContent(commentReq.getContent());
         return commentRepository.save(comment);
     }
 
     @Override
-    public void delete(String id) {
+    public void delete(String id, User currentUser) {
+        Comment comment = commentRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Comment with id " + id + " not found")
+        );
+
+        if (!comment.getAuthor().getId().equals(currentUser.getId())) {
+            throw new NotAuthorizedException("User is not authorized to delete comment for another user");
+        }
+
         commentRepository.deleteById(id);
     }
 }

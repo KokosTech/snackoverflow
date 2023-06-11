@@ -4,9 +4,12 @@
 
 package tech.kaloyan.snackoverflow.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tech.kaloyan.snackoverflow.entity.Image;
+import tech.kaloyan.snackoverflow.entity.User;
+import tech.kaloyan.snackoverflow.exeception.NotAuthorizedException;
 import tech.kaloyan.snackoverflow.repository.ImageRepository;
 import tech.kaloyan.snackoverflow.resources.req.ImageReq;
 import tech.kaloyan.snackoverflow.resources.req.QuestionReq;
@@ -34,6 +37,10 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public List<QuestionResp> getAllByAuthorId(String authorId) {
+        if (authorId == null) {
+            return MAPPER.toQuestionResps(questionRepository.findAll());
+        }
+
         return MAPPER.toQuestionResps(questionRepository.findAllByAuthorId(authorId));
     }
 
@@ -43,7 +50,13 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Question save(QuestionReq questionReq) {
+    public Question save(QuestionReq questionReq, User currentUser) {
+        if (questionReq.getAuthorId() == null) {
+            questionReq.setAuthorId(currentUser.getId());
+        } else if (!questionReq.getAuthorId().equals(currentUser.getId())) {
+            throw new NotAuthorizedException("User is not authorized to create question for another user");
+        }
+
         Question question = MAPPER.toQuestion(questionReq);
         List<Image> images = question.getImage();
         question.setImage(null);
@@ -58,17 +71,30 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Question update(String id, QuestionReq questionReq) {
+    public Question update(String id, QuestionReq questionReq, User currentUser) {
         Question question = questionRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Question with id " + id + " not found")
+                () -> new EntityNotFoundException("Question with id " + id + " not found")
         );
+
+        if (!question.getAuthor().getId().equals(currentUser.getId())) {
+            throw new NotAuthorizedException("User is not authorized to update question for another user");
+        }
+
         question.setTitle(questionReq.getTitle());
         question.setDescription(questionReq.getDescription());
         return questionRepository.save(question);
     }
 
     @Override
-    public void delete(String id) {
-        questionRepository.deleteById(id);
+    public void delete(String id, User currentUser) {
+        Question question = questionRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Question with id " + id + " not found")
+        );
+
+        if (!question.getAuthor().getId().equals(currentUser.getId())) {
+            throw new NotAuthorizedException("User is not authorized to delete question for another user");
+        }
+
+        questionRepository.delete(question);
     }
 }

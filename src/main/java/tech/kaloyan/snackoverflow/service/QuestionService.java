@@ -4,6 +4,7 @@
 
 package tech.kaloyan.snackoverflow.service;
 
+import tech.kaloyan.snackoverflow.entity.User;
 import tech.kaloyan.snackoverflow.resources.req.QuestionReq;
 import tech.kaloyan.snackoverflow.resources.resp.QuestionResp;
 import tech.kaloyan.snackoverflow.entity.Question;
@@ -16,7 +17,7 @@ public interface QuestionService {
     List<QuestionResp> getAllByAuthorId(String authorId);
     Optional<QuestionResp> getById(String id);
 
-    Question save(QuestionReq questionReq);
-    Question update(String id, QuestionReq questionReq);
-    void delete(String id);
+    Question save(QuestionReq questionReq, User currentUser);
+    Question update(String id, QuestionReq questionReq, User currentUser);
+    void delete(String id, User currentUser);
 }

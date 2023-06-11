@@ -10,4 +10,6 @@ import lombok.Data;
 public class UserResp {
     private String id;
     private String username;
+    private String email;
+    private String jwt;
 }

@@ -4,6 +4,7 @@
 
 package tech.kaloyan.snackoverflow.service;
 
+import tech.kaloyan.snackoverflow.entity.User;
 import tech.kaloyan.snackoverflow.resources.req.RatedReq;
 import tech.kaloyan.snackoverflow.resources.resp.RatedResp;
 import tech.kaloyan.snackoverflow.entity.Rated;
@@ -17,7 +18,6 @@ public interface RatedService {
     List<RatedResp> getAllByQuestionId(String questionId);
     Optional<RatedResp> getById(String id);
 
-    Rated save(RatedReq ratedReq);
-    Rated update(String id, RatedReq ratedReq);
-    void delete(String id);
+    Rated save(RatedReq ratedReq, User currentUser);
+    void delete(String id, User currentUser);
 }

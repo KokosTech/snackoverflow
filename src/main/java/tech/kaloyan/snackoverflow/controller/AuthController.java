@@ -4,11 +4,13 @@
 
 package tech.kaloyan.snackoverflow.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.kaloyan.snackoverflow.resources.req.UserLoginReq;
 import tech.kaloyan.snackoverflow.resources.req.UserSignupReq;
+import tech.kaloyan.snackoverflow.resources.resp.UserResp;
 import tech.kaloyan.snackoverflow.service.AuthService;
 
 @RestController
@@ -18,35 +20,32 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserLoginReq userLoginReq) {
+    public ResponseEntity<?> login(@Valid @RequestBody UserLoginReq userLoginReq) {
         try {
-            return ResponseEntity.ok(authService.login(userLoginReq));
+            System.out.println("Login request: " + userLoginReq);
+            UserResp userResp = authService.login(userLoginReq);
+            ResponseEntity.BodyBuilder response = ResponseEntity.ok();
+            response.header("Set-Cookie", "jwt=" + userResp.getJwt() + "; Path=/; HttpOnly; SameSite=Strict");
+            return response.body(userResp);
         } catch (RuntimeException e) {
-            if (e.getMessage().equals("User does not exist")) {
-                return ResponseEntity.notFound().build();
-            } else if (e.getMessage().equals("Wrong password")) {
-                return ResponseEntity.badRequest().body(e.getMessage());
-            }
-
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody UserSignupReq userSignupReq) {
+    public ResponseEntity<?> signup(@Valid @RequestBody UserSignupReq userSignupReq) {
         try {
-            return ResponseEntity.ok(authService.register(userSignupReq));
+            UserResp userResp = authService.register(userSignupReq);
+            ResponseEntity.BodyBuilder response = ResponseEntity.ok();
+            response.header("Set-Cookie", "jwt=" + userResp.getJwt() + "; Path=/; HttpOnly; SameSite=Strict");
+            return response.body(userResp);
         } catch (RuntimeException e) {
-            if (e.getMessage().equals("User already exists")) {
-                return ResponseEntity.badRequest().body(e.getMessage());
-            }
-
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @GetMapping("/logout")
     public void logout() {
-        // TODO (next week): JWT
+        authService.logout();
     }
 }
