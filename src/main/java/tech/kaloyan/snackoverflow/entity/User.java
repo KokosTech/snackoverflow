@@ -17,10 +17,12 @@ import java.util.Collection;
 import java.util.List;
 
 import static jakarta.persistence.GenerationType.UUID;
+import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
 @Entity
 @Data
 @Table
+@Audited(targetAuditMode = NOT_AUDITED)
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = UUID)

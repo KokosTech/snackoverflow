@@ -9,9 +9,12 @@ import lombok.Data;
 import org.hibernate.envers.Audited;
 import org.springframework.data.annotation.CreatedDate;
 
+import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
+
 @Entity
 @Data
 @Table
+@Audited(targetAuditMode = NOT_AUDITED)
 public class Saved {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

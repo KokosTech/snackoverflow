@@ -9,9 +9,12 @@ import lombok.Data;
 import org.hibernate.envers.Audited;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
+
 @Entity
 @Data
 @Table
+@Audited(targetAuditMode = NOT_AUDITED)
 public class Rated {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
