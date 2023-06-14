@@ -35,6 +35,10 @@ public interface QuestionMapper {
     Question toQuestion(QuestionReq questionReq);
 
     default Double getRating(Question question) {
+        if (question.getRated() == null || question.getRated().isEmpty()) {
+            return 0.0;
+        }
+
         return question.getRated().stream().mapToDouble(Rated::getRating).average().orElse(0.0);
     }
 

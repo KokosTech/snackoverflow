@@ -42,7 +42,7 @@ public class ReplyController {
                 return ResponseEntity.badRequest().body("Question id does not match");
             }
 
-            Reply saved = replyService.save(replyReq, authService.getUser());
+            ReplyResp saved = replyService.save(replyReq, authService.getUser());
             return ResponseEntity.created(
                     UriComponentsBuilder.fromPath("/api/v1/questions/{questionId}/comments/{commentId}/replies/{id}").buildAndExpand(questionId, commentId, saved.getId()).toUri()
             ).body(saved);
@@ -62,6 +62,15 @@ public class ReplyController {
         }
     }
 
+    @GetMapping("/{replyId}/history")
+    public ResponseEntity<?> getReplyHistory(@PathVariable String questionId, @PathVariable String commentId, @PathVariable String replyId) {
+        try {
+            return ResponseEntity.ok(replyService.getHistoryById(replyId));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     // update
 
     @PostMapping("/{replyId}")
@@ -76,7 +85,7 @@ public class ReplyController {
                 return ResponseEntity.badRequest().body("Question id does not match");
             }
 
-            Reply updated = replyService.update(replyId, replyReq, authService.getUser());
+            ReplyResp updated = replyService.update(replyId, replyReq, authService.getUser());
             return ResponseEntity.ok(updated);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

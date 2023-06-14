@@ -20,7 +20,6 @@ public interface CommentMapper {
 
     @Mapping(target = "author.id", source = "author.id")
     @Mapping(target = "author.username", source = "author.username")
-    @Mapping(target = "createdOn", expression = "java(comment.getCreatedOn().getTime().toString())")
     @Mapping(target = "questionId", source = "question.id")
     CommentResp toCommentResp(Comment comment);
 

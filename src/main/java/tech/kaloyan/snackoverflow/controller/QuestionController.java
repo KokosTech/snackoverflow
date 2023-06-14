@@ -4,6 +4,7 @@
 
 package tech.kaloyan.snackoverflow.controller;
 
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,11 +13,13 @@ import tech.kaloyan.snackoverflow.entity.Question;
 import tech.kaloyan.snackoverflow.resources.req.QuestionReq;
 import tech.kaloyan.snackoverflow.resources.req.RatedReq;
 import tech.kaloyan.snackoverflow.resources.req.SavedReq;
+import tech.kaloyan.snackoverflow.resources.resp.QuestionResp;
 import tech.kaloyan.snackoverflow.service.AuthService;
 import tech.kaloyan.snackoverflow.service.QuestionService;
 import tech.kaloyan.snackoverflow.service.RatedService;
 import tech.kaloyan.snackoverflow.service.SavedService;
 
+import java.util.Date;
 import java.util.Objects;
 
 @RestController
@@ -51,11 +54,19 @@ public class QuestionController {
         }
     }
 
+//    @GetMapping("/{id}/history")
+//    public ResponseEntity<?> getQuestionHistoryUntilDateById(@PathVariable String id, @RequestParam Date date) {
+//        try {
+//            return ResponseEntity.ok(questionService.getHistoryByIdAndDate(id, date));
+//        } catch (RuntimeException e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
+
     @PostMapping
     public ResponseEntity<?> create(@RequestBody QuestionReq questionReq) {
         try {
-            System.out.println("AAAAAA");
-            Question saved = questionService.save(questionReq, authService.getUser());
+            QuestionResp saved = questionService.save(questionReq, authService.getUser());
             return ResponseEntity.created(
                     UriComponentsBuilder.fromPath("/api/v1/questions/{id}")
                             .buildAndExpand(saved.getId())

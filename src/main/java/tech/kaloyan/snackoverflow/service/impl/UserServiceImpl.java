@@ -14,6 +14,7 @@ import tech.kaloyan.snackoverflow.exeception.NotAuthorizedException;
 import tech.kaloyan.snackoverflow.repository.UserRepository;
 import tech.kaloyan.snackoverflow.resources.req.UserSignupReq;
 import tech.kaloyan.snackoverflow.resources.resp.UserAccountResp;
+import tech.kaloyan.snackoverflow.resources.resp.UserResp;
 import tech.kaloyan.snackoverflow.service.JWTService;
 import tech.kaloyan.snackoverflow.service.UserService;
 
@@ -59,14 +60,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User save(UserSignupReq userReq) {
+    public UserResp save(UserSignupReq userReq) {
         User user = MAPPER.toUser(userReq);
         user.setPasshash(BCrypt.hashpw(userReq.getPassword(), BCrypt.gensalt()));
-        return userRepository.save(user);
+        return MAPPER.toUserResp(userRepository.save(user));
     }
 
     @Override
-    public User update(String id, UserSignupReq user, User currentUser){
+    public UserResp update(String id, UserSignupReq user, User currentUser){
         if (!id.equals(currentUser.getId())) {
             throw new NotAuthorizedException("User is not authorized to update another user");
         }
@@ -87,7 +88,7 @@ public class UserServiceImpl implements UserService {
             userToUpdate.setPasshash(passwordEncoder.encode(user.getPassword()));
         }
 
-        return userRepository.save(userToUpdate);
+        return MAPPER.toUserResp(userRepository.save(userToUpdate));
     }
 
     @Override

@@ -20,7 +20,7 @@ public interface QuestionService {
     List<QuestionResp> getHistoryById(String id);
     List<QuestionResp> getHistoryByIdAndDate(String id, Date date);
 
-    Question save(QuestionReq questionReq, User currentUser);
-    Question update(String id, QuestionReq questionReq, User currentUser);
+    QuestionResp save(QuestionReq questionReq, User currentUser);
+    QuestionResp update(String id, QuestionReq questionReq, User currentUser);
     void delete(String id, User currentUser);
 }

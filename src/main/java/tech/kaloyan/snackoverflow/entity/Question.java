@@ -47,7 +47,6 @@ public class Question {
     private Calendar createdOn;
 
     @Column(nullable = true)
-    @Temporal(TemporalType.TIMESTAMP)
     private Date lastModified;
 
     @Column(nullable = false)

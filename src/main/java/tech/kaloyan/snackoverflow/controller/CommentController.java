@@ -73,6 +73,15 @@ public class CommentController {
         }
     }
 
+    @GetMapping("/{commentId}/history")
+    public ResponseEntity<?> getCommentsHistoryById(@PathVariable String questionId, @PathVariable String commentId) {
+        try {
+            return ResponseEntity.ok(commentService.getHistoryById(commentId));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     // update
 
     @PutMapping("/{commentId}")

@@ -63,7 +63,6 @@ public class QuestionServiceImpl implements QuestionService {
         List<Question> boards = new ArrayList<>();
         for (Number idRev: revisions) {
             Question board = auditReader.find(Question.class, id, idRev);
-            System.out.println("BOARD -> " + board);
             boards.add(board);
         }
         return MAPPER.toQuestionResps(boards);
@@ -77,21 +76,17 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public List<QuestionResp> getHistoryByIdAndDate(String id, Date date) {
         return getQuestionHistory(id).stream().filter(
-                boardResource -> boardResource.getCreatedOn().before(date)
+                question -> question.getCreatedOn().before(date)
         ).toList();
     }
 
     @Override
-    public Question save(QuestionReq questionReq, User currentUser) {
+    public QuestionResp save(QuestionReq questionReq, User currentUser) {
         if (questionReq.getAuthorId() == null) {
             questionReq.setAuthorId(currentUser.getId());
         } else if (!questionReq.getAuthorId().equals(currentUser.getId())) {
             throw new NotAuthorizedException("User is not authorized to create question for another user");
         }
-        System.out.println("BBBB");
-        System.out.println(questionReq);
-        System.out.println("BBBB");
-
         Question question = MAPPER.toQuestion(questionReq);
         List<Image> images = question.getImage();
         question.setImage(null);
@@ -104,11 +99,11 @@ public class QuestionServiceImpl implements QuestionService {
             imageRepository.save(image);
         }
 
-        return question;
+        return MAPPER.toQuestionResp(question);
     }
 
     @Override
-    public Question update(String id, QuestionReq questionReq, User currentUser) {
+    public QuestionResp update(String id, QuestionReq questionReq, User currentUser) {
         Question question = questionRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Question with id " + id + " not found")
         );
@@ -119,7 +114,7 @@ public class QuestionServiceImpl implements QuestionService {
 
         question.setTitle(questionReq.getTitle());
         question.setDescription(questionReq.getDescription());
-        return questionRepository.save(question);
+        return MAPPER.toQuestionResp(questionRepository.save(question));
     }
 
     @Override

@@ -6,6 +6,7 @@ package tech.kaloyan.snackoverflow.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.envers.Audited;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
@@ -44,14 +45,17 @@ public class Reply {
         lastModified = new Date();
     }
 
+    @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
+    @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "comment_id", nullable = true)
     private Comment comment;
 
+    @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "reply_id", nullable = true)
     private Reply reply;
