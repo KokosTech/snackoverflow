@@ -22,7 +22,6 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody UserLoginReq userLoginReq) {
         try {
-            System.out.println("Login request: " + userLoginReq);
             UserResp userResp = authService.login(userLoginReq);
             ResponseEntity.BodyBuilder response = ResponseEntity.ok();
             response.header("Set-Cookie", "jwt=" + userResp.getJwt() + "; Path=/; HttpOnly; SameSite=Strict");
