@@ -1,5 +1,5 @@
 # Snackoverflow
-School project for the course "OOP with Java" at TUES 
+School project
 
 ## Project description
 Snackoverflow is a simple REST API for a stackoverflow-like website
