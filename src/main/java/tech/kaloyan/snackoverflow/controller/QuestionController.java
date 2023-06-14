@@ -42,9 +42,19 @@ public class QuestionController {
         }
     }
 
+    @GetMapping("/{id}/history")
+    public ResponseEntity<?> getQuestionHistoryById(@PathVariable String id) {
+        try {
+            return ResponseEntity.ok(questionService.getHistoryById(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @PostMapping
     public ResponseEntity<?> create(@RequestBody QuestionReq questionReq) {
         try {
+            System.out.println("AAAAAA");
             Question saved = questionService.save(questionReq, authService.getUser());
             return ResponseEntity.created(
                     UriComponentsBuilder.fromPath("/api/v1/questions/{id}")

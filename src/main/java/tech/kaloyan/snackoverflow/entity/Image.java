@@ -6,6 +6,7 @@ package tech.kaloyan.snackoverflow.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 import org.hibernate.envers.Audited;
 
 import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
@@ -25,6 +26,7 @@ public class Image {
     @Column(nullable = false, length = 256)
     private String url;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "question_id", nullable = false)
     private Question question;

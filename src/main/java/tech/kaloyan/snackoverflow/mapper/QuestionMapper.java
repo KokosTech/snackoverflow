@@ -31,6 +31,7 @@ public interface QuestionMapper {
 
     @Mapping(target = "author.id", source = "authorId")
     @Mapping(target = "image", source = "images")
+    @Mapping(target = "validFrom", source = "validFrom")
     Question toQuestion(QuestionReq questionReq);
 
     default Double getRating(Question question) {

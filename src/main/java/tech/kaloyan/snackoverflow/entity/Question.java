@@ -4,8 +4,15 @@
 
 package tech.kaloyan.snackoverflow.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
@@ -44,7 +51,6 @@ public class Question {
     private Date lastModified;
 
     @Column(nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     private Date validFrom;
 
     @PrePersist
@@ -59,19 +65,29 @@ public class Question {
     }
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JsonIgnore
+    @ToString.Exclude
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
     @Column(nullable = true)
+    @JsonIgnore
+    @ToString.Exclude
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> image;
 
+    @ToString.Exclude
+    @JsonIgnore
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comment;
 
+    @ToString.Exclude
+    @JsonIgnore
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Saved> saved;
 
+    @ToString.Exclude
+    @JsonIgnore
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Rated> rated;
 }
