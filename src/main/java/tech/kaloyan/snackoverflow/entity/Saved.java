@@ -12,7 +12,6 @@ import org.springframework.data.annotation.CreatedDate;
 @Entity
 @Data
 @Table
-@Audited
 public class Saved {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import javax.validation.constraints.Null;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import static jakarta.persistence.GenerationType.UUID;
@@ -21,7 +22,6 @@ import static jakarta.persistence.GenerationType.UUID;
 @Data
 @Table
 @Audited
-@EnableJpaAuditing
 public class Question {
     @Id
     @GeneratedValue(strategy = UUID)
@@ -38,6 +38,25 @@ public class Question {
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
     private Calendar createdOn;
+
+    @Column(nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastModified;
+
+    @Column(nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date validFrom;
+
+    @PrePersist
+    protected void onCreate() {
+        createdOn = Calendar.getInstance();
+        lastModified = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        lastModified = new Date();
+    }
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "author_id", nullable = false)

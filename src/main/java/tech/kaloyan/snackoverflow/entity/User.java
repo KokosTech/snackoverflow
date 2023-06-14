@@ -21,7 +21,6 @@ import static jakarta.persistence.GenerationType.UUID;
 @Entity
 @Data
 @Table
-@Audited
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = UUID)

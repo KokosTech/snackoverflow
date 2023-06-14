@@ -11,7 +11,6 @@ import org.hibernate.envers.Audited;
 @Entity
 @Data
 @Table
-@Audited
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

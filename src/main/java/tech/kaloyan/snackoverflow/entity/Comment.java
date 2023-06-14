@@ -11,6 +11,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -30,6 +31,21 @@ public class Comment {
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
     private java.util.Calendar createdOn;
+
+    @Column(nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastModified;
+
+    @PrePersist
+    protected void onCreate() {
+        createdOn = java.util.Calendar.getInstance();
+        lastModified = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        lastModified = new Date();
+    }
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "author_id", nullable = false)

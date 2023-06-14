@@ -12,7 +12,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @Entity
 @Data
 @Table
-@Audited
 public class Rated {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
