@@ -8,12 +8,13 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
+import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
 @Entity
 @Data
@@ -37,6 +38,20 @@ public class Comment {
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastModified;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "author_id", nullable = false)
+    private User author;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "question_id", nullable = false)
+    private Question question;
+
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Audited(targetAuditMode = NOT_AUDITED)
+    @NotAudited
+    private List<Reply> reply;
+
     @PrePersist
     protected void onCreate() {
         createdOn = java.util.Calendar.getInstance();
@@ -47,18 +62,4 @@ public class Comment {
     protected void onUpdate() {
         lastModified = new Date();
     }
-
-    @EqualsAndHashCode.Exclude
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "author_id", nullable = false)
-    private User author;
-
-    @EqualsAndHashCode.Exclude
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "question_id", nullable = false)
-    private Question question;
-
-    @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Reply> reply;
 }

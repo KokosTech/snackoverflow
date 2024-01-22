@@ -7,12 +7,13 @@ package tech.kaloyan.snackoverflow.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 import tech.kaloyan.snackoverflow.resources.req.CommentReq;
 import tech.kaloyan.snackoverflow.resources.resp.CommentResp;
 import tech.kaloyan.snackoverflow.service.AuthService;
 import tech.kaloyan.snackoverflow.service.CommentService;
 
-import java.util.Objects;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -22,106 +23,42 @@ public class CommentController {
     private final AuthService authService;
     private final CommentService commentService;
 
-    // create
-
     @PostMapping
-    public ResponseEntity<?> create(@PathVariable String questionId, @RequestBody CommentReq commentReq) {
-        try {
-            if (!Objects.equals(questionId, commentReq.getQuestionId())) {
-                return ResponseEntity.badRequest().body("Question id does not match");
-            }
-
-            return ResponseEntity.ok(commentService.save(commentReq, authService.getUser()));
-        } catch (RuntimeException e) {
-            if (e.getMessage().equals("Question does not exist")) {
-                return ResponseEntity.notFound().build();
-            } else if (e.getMessage().equals("User does not exist")) {
-                return ResponseEntity.notFound().build();
-            }
-
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<CommentResp> create(@PathVariable String questionId, @RequestBody CommentReq commentReq) {
+        CommentResp saved = commentService.save(questionId, commentReq);
+        return ResponseEntity.created(
+                UriComponentsBuilder.fromPath("/api/v1/questions/{questionId}/comments/{id}")
+                        .buildAndExpand(questionId, saved.getId())
+                        .toUri()
+        ).body(saved);
     }
 
-    // read
-
     @GetMapping
-    public ResponseEntity<?> getCommentsByQuestionId(@PathVariable String questionId) {
-        try {
-            return ResponseEntity.ok(commentService.getAllByQuestionId(questionId));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<List<CommentResp>> getCommentsByQuestionId(@PathVariable String questionId) {
+        return ResponseEntity.ok(commentService.getAllByQuestionId(questionId));
+
     }
 
     @GetMapping("/{commentId}")
-    public ResponseEntity<?> getCommentById(@PathVariable String questionId, @PathVariable String commentId) {
-        try {
-            Optional<CommentResp> commentResp = commentService.getById(commentId);
-
-            if (commentResp.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
-
-            if (commentResp.get().getQuestionId().equals(questionId)) {
-                return ResponseEntity.ok(commentResp.get());
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Optional<CommentResp>> getCommentById(@PathVariable String questionId, @PathVariable String commentId) {
+        Optional<CommentResp> commentResp = commentService.getById(commentId);
+        return ResponseEntity.ok(commentResp);
     }
 
     @GetMapping("/{commentId}/history")
-    public ResponseEntity<?> getCommentsHistoryById(@PathVariable String questionId, @PathVariable String commentId) {
-        try {
-            return ResponseEntity.ok(commentService.getHistoryById(commentId));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<List<CommentResp>> getCommentsHistoryById(@PathVariable String questionId, @PathVariable String commentId) {
+        return ResponseEntity.ok(commentService.getHistoryById(commentId));
     }
-
-    // update
 
     @PutMapping("/{commentId}")
-    public ResponseEntity<?> updateCommentById(@PathVariable String questionId, @PathVariable String commentId, @RequestBody CommentReq commentReq) {
-        try {
-            Optional<CommentResp> commentResp = commentService.getById(commentId);
-
-            if (commentResp.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
-
-            if (commentResp.get().getQuestionId().equals(questionId)) {
-                return ResponseEntity.ok(commentService.update(commentId, commentReq, authService.getUser()));
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (RuntimeException e) {
-            return ResponseEntity.internalServerError().build();
-        }
+    public ResponseEntity<CommentResp> updateCommentById(@PathVariable String questionId, @PathVariable String commentId, @RequestBody CommentReq commentReq) {
+        return ResponseEntity.ok(commentService.update(commentId, questionId, commentReq));
     }
 
-    // delete
 
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<?> deleteCommentById(@PathVariable String questionId, @PathVariable String commentId) {
-        try {
-            Optional<CommentResp> commentResp = commentService.getById(commentId);
-
-            if (commentResp.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
-
-            if (commentResp.get().getQuestionId().equals(questionId)) {
-                commentService.delete(commentId, authService.getUser());
-                return ResponseEntity.ok().build();
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (RuntimeException e) {
-            return ResponseEntity.internalServerError().build();
-        }
+    public ResponseEntity<Void> deleteCommentById(@PathVariable String questionId, @PathVariable String commentId) {
+        commentService.delete(commentId, questionId);
+        return ResponseEntity.noContent().build();
     }
 }

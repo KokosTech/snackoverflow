@@ -12,16 +12,15 @@ import org.hibernate.envers.AuditReaderFactory;
 import org.springframework.stereotype.Service;
 import tech.kaloyan.snackoverflow.entity.Comment;
 import tech.kaloyan.snackoverflow.entity.User;
+import tech.kaloyan.snackoverflow.exeception.BadRequestException;
 import tech.kaloyan.snackoverflow.exeception.NotAuthorizedException;
 import tech.kaloyan.snackoverflow.repository.CommentRepository;
 import tech.kaloyan.snackoverflow.resources.req.CommentReq;
 import tech.kaloyan.snackoverflow.resources.resp.CommentResp;
 import tech.kaloyan.snackoverflow.service.CommentService;
+import tech.kaloyan.snackoverflow.service.UserService;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static tech.kaloyan.snackoverflow.mapper.CommentMapper.MAPPER;
 
@@ -30,6 +29,26 @@ import static tech.kaloyan.snackoverflow.mapper.CommentMapper.MAPPER;
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final EntityManagerFactory entityManagerFactory;
+    private final AuthServiceImpl authService;
+    private final QuestionServiceImpl questionService;
+    private final UserService userService;
+
+    private void checkQuestion(String questionId, String commentId) {
+        if (!Objects.equals(questionId, commentId)) {
+            throw new BadRequestException("Question id does not match");
+        }
+
+        questionService.getById(questionId);
+    }
+
+    private String getAuthorId(String authorId) {
+        String currentUserId = authService.getUser().getId();
+        if (!authorId.equals(currentUserId)) {
+            throw new NotAuthorizedException("User is not authorized to create comment for another user");
+        }
+
+        return currentUserId;
+    }
 
     @Override
     public List<CommentResp> getAll() {
@@ -57,6 +76,15 @@ public class CommentServiceImpl implements CommentService {
         List<Comment> comments = new ArrayList<>();
         for (Number idRev : revisions) {
             Comment comment = auditReader.find(Comment.class, id, idRev);
+            User author = comment.getAuthor();
+
+            if (author != null) {
+                Optional<User> authorDb = userService.getUserById(
+                        comment.getAuthor().getId()
+                );
+
+                authorDb.ifPresent(comment::setAuthor);
+            }
             comments.add(comment);
         }
         return MAPPER.toCommentResps(comments);
@@ -75,39 +103,33 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentResp save(CommentReq commentReq, User currentUser) {
-        if (commentReq.getAuthorId() == null) {
-            commentReq.setAuthorId(currentUser.getId());
-        } else if (!commentReq.getAuthorId().equals(currentUser.getId())) {
-            throw new NotAuthorizedException("User is not authorized to create comment for another user");
-        }
-
+    public CommentResp save(String questionId, CommentReq commentReq) {
+        checkQuestion(questionId, commentReq.getQuestionId());
+        commentReq.setAuthorId(getAuthorId(commentReq.getAuthorId()));
         return MAPPER.toCommentResp(commentRepository.save(MAPPER.toComment(commentReq)));
     }
 
     @Override
-    public CommentResp update(String id, CommentReq commentReq, User currentUser) {
+    public CommentResp update(String id, String questionId, CommentReq commentReq) {
         Comment comment = commentRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Comment with id " + id + " not found")
         );
 
-        if (!comment.getAuthor().getId().equals(currentUser.getId())) {
-            throw new NotAuthorizedException("User is not authorized to update comment for another user");
-        }
+        checkQuestion(questionId, comment.getQuestion().getId());
+        commentReq.setAuthorId(getAuthorId(commentReq.getAuthorId()));
 
         comment.setContent(commentReq.getContent());
         return MAPPER.toCommentResp(commentRepository.save(comment));
     }
 
     @Override
-    public void delete(String id, User currentUser) {
+    public void delete(String id, String questionId) {
         Comment comment = commentRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Comment with id " + id + " not found")
         );
 
-        if (!comment.getAuthor().getId().equals(currentUser.getId())) {
-            throw new NotAuthorizedException("User is not authorized to delete comment for another user");
-        }
+        checkQuestion(questionId, comment.getQuestion().getId());
+        getAuthorId(comment.getAuthor().getId());
 
         commentRepository.deleteById(id);
     }
