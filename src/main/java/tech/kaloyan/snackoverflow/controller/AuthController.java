@@ -20,27 +20,20 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody UserLoginReq userLoginReq) {
-        try {
-            UserResp userResp = authService.login(userLoginReq);
-            ResponseEntity.BodyBuilder response = ResponseEntity.ok();
-            response.header("Set-Cookie", "jwt=" + userResp.getJwt() + "; Path=/; HttpOnly; SameSite=Strict");
-            return response.body(userResp);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<UserResp> login(@Valid @RequestBody UserLoginReq userLoginReq) {
+        UserResp userResp = authService.login(userLoginReq);
+        ResponseEntity.BodyBuilder response = ResponseEntity.ok();
+        response.header("Set-Cookie", "jwt=" + userResp.getJwt() + "; Path=/; HttpOnly; SameSite=Strict");
+        return response.body(userResp);
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@Valid @RequestBody UserSignupReq userSignupReq) {
-        try {
-            UserResp userResp = authService.register(userSignupReq);
-            ResponseEntity.BodyBuilder response = ResponseEntity.ok();
-            response.header("Set-Cookie", "jwt=" + userResp.getJwt() + "; Path=/; HttpOnly; SameSite=Strict");
-            return response.body(userResp);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<UserResp> signup(@Valid @RequestBody UserSignupReq userSignupReq) {
+        UserResp userResp = authService.register(userSignupReq);
+        ResponseEntity.BodyBuilder response = ResponseEntity.ok();
+        response.header("Set-Cookie", "jwt=" + userResp.getJwt() + "; Path=/; HttpOnly; SameSite=Strict");
+        return response.body(userResp);
+
     }
 
     @GetMapping("/logout")

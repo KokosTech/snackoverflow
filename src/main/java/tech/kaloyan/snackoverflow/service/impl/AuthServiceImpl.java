@@ -51,8 +51,6 @@ public class AuthServiceImpl implements AuthService {
             throw new BadCredentialsException("PASSWORD_REQ");
         }
 
-        System.out.println(userSignupReq.toString());
-
         User user = MAPPER.toUser(userSignupReq);
         user.setPasshash(passwordEncoder.encode(userSignupReq.getPassword()));
         user.setCreatedOn(new Calendar.Builder().setInstant(new Date()).build());
@@ -64,7 +62,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             userResp= MAPPER.toUserResp(userRepository.save(user));
         } catch (DataIntegrityViolationException e) {
-            throw new EntityExistsException("User already exists");
+            throw new EntityExistsException("USER_EXISTS");
         }
 
         userResp.setJwt(jwt);
@@ -92,9 +90,11 @@ public class AuthServiceImpl implements AuthService {
             );
 
             Optional<User> userOptional = userRepository.findByUsername(userLoginReq.getEmail());
+
             if (userOptional.isEmpty()) {
                 throw new BadCredentialsException("INVALID_CREDENTIALS");
             }
+
             user = userOptional.get();
             user.setLastLogin(new Calendar.Builder().setInstant(new Date()).build());
             userRepository.save(user);
