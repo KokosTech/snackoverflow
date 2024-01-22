@@ -16,7 +16,7 @@ import java.util.Optional;
 public interface QuestionService {
     List<QuestionResp> getAll();
     List<QuestionResp> getAllByAuthorId(String authorId);
-    Optional<QuestionResp> getById(String id);
+    QuestionResp getById(String id);
     List<QuestionResp> getHistoryById(String id);
     List<QuestionResp> getHistoryByIdAndDate(String id, Date date);
 

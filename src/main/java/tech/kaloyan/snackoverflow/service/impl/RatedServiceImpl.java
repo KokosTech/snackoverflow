@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 import tech.kaloyan.snackoverflow.entity.Rated;
 import tech.kaloyan.snackoverflow.entity.User;
+import tech.kaloyan.snackoverflow.exeception.BadRequestException;
 import tech.kaloyan.snackoverflow.exeception.NotAuthorizedException;
 import tech.kaloyan.snackoverflow.repository.QuestionRepository;
 import tech.kaloyan.snackoverflow.repository.RatedRepository;
@@ -17,6 +18,7 @@ import tech.kaloyan.snackoverflow.resources.resp.RatedResp;
 import tech.kaloyan.snackoverflow.service.RatedService;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static tech.kaloyan.snackoverflow.mapper.RatedMapper.MAPPER;
@@ -48,7 +50,11 @@ public class RatedServiceImpl implements RatedService {
     }
 
     @Override
-    public Rated save(RatedReq ratedReq, User currentUser) {
+    public RatedResp save(RatedReq ratedReq, String questionId, User currentUser) {
+        if (!Objects.equals(questionId, ratedReq.getQuestionId())) {
+            throw new BadRequestException("Question id does not match");
+        }
+
         if (ratedReq.getUserId() == null) {
             ratedReq.setUserId(currentUser.getId());
         } else if (!ratedReq.getUserId().equals(currentUser.getId())) {
@@ -63,10 +69,10 @@ public class RatedServiceImpl implements RatedService {
         Optional<Rated> rated = ratedRepository.findByUserIdAndQuestionId(ratedReq.getUserId(), ratedReq.getQuestionId());
         if (rated.isPresent()) {
             rated.get().setRating(ratedReq.getRating());
-            return ratedRepository.save(rated.get());
+            return MAPPER.toRatedResp(ratedRepository.save(rated.get()));
         }
 
-        return ratedRepository.save(MAPPER.toRated(ratedReq));
+        return MAPPER.toRatedResp(ratedRepository.save(MAPPER.toRated(ratedReq)));
     }
 
     @Override

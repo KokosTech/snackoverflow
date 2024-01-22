@@ -10,10 +10,12 @@ import org.springframework.stereotype.Repository;
 import tech.kaloyan.snackoverflow.entity.Saved;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
  @Hidden
 public interface SavedRepository extends JpaRepository<Saved, String> {
     List<Saved> findAllByUserId(String userId);
     List<Saved> findAllByQuestionId(String questionId);
+    Optional<Saved> findByUserIdAndQuestionId(String userId, String questionId);
 }

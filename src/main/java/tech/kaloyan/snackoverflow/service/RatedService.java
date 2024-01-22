@@ -18,6 +18,6 @@ public interface RatedService {
     List<RatedResp> getAllByQuestionId(String questionId);
     Optional<RatedResp> getById(String id);
 
-    Rated save(RatedReq ratedReq, User currentUser);
+    RatedResp save(RatedReq ratedReq, String questionId, User currentUser);
     void delete(String id, User currentUser);
 }

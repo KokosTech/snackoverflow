@@ -4,23 +4,22 @@
 
 package tech.kaloyan.snackoverflow.controller;
 
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-import tech.kaloyan.snackoverflow.entity.Question;
 import tech.kaloyan.snackoverflow.resources.req.QuestionReq;
 import tech.kaloyan.snackoverflow.resources.req.RatedReq;
 import tech.kaloyan.snackoverflow.resources.req.SavedReq;
 import tech.kaloyan.snackoverflow.resources.resp.QuestionResp;
+import tech.kaloyan.snackoverflow.resources.resp.RatedResp;
+import tech.kaloyan.snackoverflow.resources.resp.SavedResp;
 import tech.kaloyan.snackoverflow.service.AuthService;
 import tech.kaloyan.snackoverflow.service.QuestionService;
 import tech.kaloyan.snackoverflow.service.RatedService;
 import tech.kaloyan.snackoverflow.service.SavedService;
 
-import java.util.Date;
-import java.util.Objects;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/questions")
@@ -32,97 +31,49 @@ public class QuestionController {
     private final SavedService savedService;
 
     @GetMapping
-    public ResponseEntity<?> getAllQuestions() {
+    public ResponseEntity<List<QuestionResp>> getAllQuestions() {
         return ResponseEntity.ok(questionService.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getQuestionById(@PathVariable String id) {
-        try {
-            return ResponseEntity.ok(questionService.getById(id));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<QuestionResp> getQuestionById(@PathVariable String id) {
+        return ResponseEntity.ok(questionService.getById(id));
     }
 
     @GetMapping("/{id}/history")
-    public ResponseEntity<?> getQuestionHistoryById(@PathVariable String id) {
-        try {
-            return ResponseEntity.ok(questionService.getHistoryById(id));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<List<QuestionResp>> getQuestionHistoryById(@PathVariable String id) {
+        return ResponseEntity.ok(questionService.getHistoryById(id));
     }
 
-//    @GetMapping("/{id}/history")
-//    public ResponseEntity<?> getQuestionHistoryUntilDateById(@PathVariable String id, @RequestParam Date date) {
-//        try {
-//            return ResponseEntity.ok(questionService.getHistoryByIdAndDate(id, date));
-//        } catch (RuntimeException e) {
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-//    }
-
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody QuestionReq questionReq) {
-        try {
-            QuestionResp saved = questionService.save(questionReq, authService.getUser());
-            return ResponseEntity.created(
-                    UriComponentsBuilder.fromPath("/api/v1/questions/{id}")
-                            .buildAndExpand(saved.getId())
-                            .toUri()
-            ).body(saved);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<QuestionResp> create(@RequestBody QuestionReq questionReq) {
+        QuestionResp saved = questionService.save(questionReq, authService.getUser());
+        return ResponseEntity.created(
+                UriComponentsBuilder.fromPath("/api/v1/questions/{id}")
+                        .buildAndExpand(saved.getId())
+                        .toUri()
+        ).body(saved);
     }
 
     @PostMapping("/{id}/rate")
-    public ResponseEntity<?> rate(@PathVariable String id, @RequestBody RatedReq ratedReq) {
-        try {
-            if (!Objects.equals(id, ratedReq.getQuestionId())) {
-                return ResponseEntity.badRequest().body("Question id does not match");
-            }
-
-            return ResponseEntity.ok(ratedService.save(ratedReq, authService.getUser()));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<RatedResp> rate(@PathVariable String id, @RequestBody RatedReq ratedReq) {
+        return ResponseEntity.ok(ratedService.save(ratedReq, id, authService.getUser()));
     }
 
     @PostMapping("/{id}/save")
-    public ResponseEntity<?> save(@PathVariable String id, @RequestBody SavedReq savedReq) {
-        try {
-            if (!Objects.equals(id, savedReq.getQuestionId())) {
-                return ResponseEntity.badRequest().body("Question id does not match");
-            }
-
-            return ResponseEntity.ok(savedService.save(savedReq, authService.getUser()));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<SavedResp> save(@PathVariable String id, @RequestBody SavedReq savedReq) {
+        return ResponseEntity.ok(savedService.save(id, savedReq, authService.getUser()));
     }
-
-    // update
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable String id, @RequestBody QuestionReq questionReq) {
-        try {
-            return ResponseEntity.ok(questionService.update(id, questionReq, authService.getUser()));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<QuestionResp> update(@PathVariable String id, @RequestBody QuestionReq questionReq) {
+        return ResponseEntity.ok(questionService.update(id, questionReq, authService.getUser()));
     }
 
-    // delete
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable String id) {
-        try {
-            questionService.delete(id, authService.getUser());
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        questionService.delete(id, authService.getUser());
+        return ResponseEntity.noContent().build();
     }
 }

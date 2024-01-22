@@ -4,26 +4,21 @@
 
 package tech.kaloyan.snackoverflow.entity;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-import javax.validation.constraints.Null;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import static jakarta.persistence.GenerationType.UUID;
+import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
 @Entity
 @Data
@@ -51,21 +46,7 @@ public class Question {
 
     @Column(nullable = false)
     private Date validFrom;
-
-    @PrePersist
-    protected void onCreate() {
-        createdOn = Calendar.getInstance();
-        lastModified = new Date();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        lastModified = new Date();
-    }
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JsonIgnore
-    @ToString.Exclude
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
@@ -77,16 +58,36 @@ public class Question {
 
     @ToString.Exclude
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
+    @Audited(targetAuditMode = NOT_AUDITED)
+    @NotAudited
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comment;
 
     @ToString.Exclude
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
+    @Audited(targetAuditMode = NOT_AUDITED)
+    @NotAudited
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Saved> saved;
 
     @ToString.Exclude
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
+    @Audited(targetAuditMode = NOT_AUDITED)
+    @NotAudited
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Rated> rated;
+
+    @PrePersist
+    protected void onCreate() {
+        createdOn = Calendar.getInstance();
+        lastModified = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        lastModified = new Date();
+    }
 }

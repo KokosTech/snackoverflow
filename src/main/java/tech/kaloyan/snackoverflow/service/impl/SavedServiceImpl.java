@@ -56,6 +56,13 @@ public class SavedServiceImpl implements SavedService {
             throw new ConflictException("Question id in the path and in the body do not match");
         }
 
+        Optional<Saved> checkSaved = savedRepository.findByUserIdAndQuestionId(savedReq.getUserId(), savedReq.getQuestionId());
+        checkSaved.ifPresent(saved -> {
+            this.delete(saved.getId(), currentUser);
+            throw new ConflictException("Deleted saved");
+        });
+
+
         Saved saved = MAPPER.toSaved(savedReq);
         saved.setSavedOn(new Calendar.Builder().setInstant(new Date()).build());
 
