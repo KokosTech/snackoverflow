@@ -8,10 +8,12 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.util.Date;
+
+import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
 @Entity
 @Data
@@ -33,6 +35,24 @@ public class Reply {
     @Column(nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastModified;
+    @EqualsAndHashCode.Exclude
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "author_id", nullable = false)
+    @Audited(targetAuditMode = NOT_AUDITED)
+    @NotAudited
+    private User author;
+    @EqualsAndHashCode.Exclude
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "comment_id", nullable = true)
+    @Audited(targetAuditMode = NOT_AUDITED)
+    @NotAudited
+    private Comment comment;
+    @EqualsAndHashCode.Exclude
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "reply_id", nullable = true)
+    @Audited(targetAuditMode = NOT_AUDITED)
+    @NotAudited
+    private Reply reply;
 
     @PrePersist
     protected void onCreate() {
@@ -44,19 +64,4 @@ public class Reply {
     protected void onUpdate() {
         lastModified = new Date();
     }
-
-    @EqualsAndHashCode.Exclude
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "author_id", nullable = false)
-    private User author;
-
-    @EqualsAndHashCode.Exclude
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "comment_id", nullable = true)
-    private Comment comment;
-
-    @EqualsAndHashCode.Exclude
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "reply_id", nullable = true)
-    private Reply reply;
 }
