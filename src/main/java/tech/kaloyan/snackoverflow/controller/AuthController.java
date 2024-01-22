@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.kaloyan.snackoverflow.resources.req.UserLoginReq;
 import tech.kaloyan.snackoverflow.resources.req.UserSignupReq;
-import tech.kaloyan.snackoverflow.resources.resp.UserResp;
+import tech.kaloyan.snackoverflow.resources.resp.AuthResp;
 import tech.kaloyan.snackoverflow.service.AuthService;
 
 @RestController
@@ -20,19 +20,19 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<UserResp> login(@Valid @RequestBody UserLoginReq userLoginReq) {
-        UserResp userResp = authService.login(userLoginReq);
+    public ResponseEntity<AuthResp> login(@Valid @RequestBody UserLoginReq userLoginReq) {
+        AuthResp authResp = authService.login(userLoginReq);
         ResponseEntity.BodyBuilder response = ResponseEntity.ok();
-        response.header("Set-Cookie", "jwt=" + userResp.getJwt() + "; Path=/; HttpOnly; SameSite=Strict");
-        return response.body(userResp);
+        response.header("Set-Cookie", "jwt=" + authResp.getJwt() + "; Path=/; HttpOnly; SameSite=Strict");
+        return response.body(authResp);
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<UserResp> signup(@Valid @RequestBody UserSignupReq userSignupReq) {
-        UserResp userResp = authService.register(userSignupReq);
+    public ResponseEntity<AuthResp> signup(@Valid @RequestBody UserSignupReq userSignupReq) {
+        AuthResp authResp = authService.register(userSignupReq);
         ResponseEntity.BodyBuilder response = ResponseEntity.ok();
-        response.header("Set-Cookie", "jwt=" + userResp.getJwt() + "; Path=/; HttpOnly; SameSite=Strict");
-        return response.body(userResp);
+        response.header("Set-Cookie", "jwt=" + authResp.getJwt() + "; Path=/; HttpOnly; SameSite=Strict");
+        return response.body(authResp);
 
     }
 

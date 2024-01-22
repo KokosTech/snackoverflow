@@ -11,17 +11,16 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tech.kaloyan.snackoverflow.entity.User;
+import tech.kaloyan.snackoverflow.exeception.BadRequestException;
 import tech.kaloyan.snackoverflow.repository.UserRepository;
 import tech.kaloyan.snackoverflow.resources.req.UserLoginReq;
 import tech.kaloyan.snackoverflow.resources.req.UserSignupReq;
-import tech.kaloyan.snackoverflow.resources.resp.UserResp;
+import tech.kaloyan.snackoverflow.resources.resp.AuthResp;
 import tech.kaloyan.snackoverflow.service.AuthService;
 import tech.kaloyan.snackoverflow.service.JWTService;
-import tech.kaloyan.snackoverflow.service.UserService;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -38,17 +37,17 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public UserResp register(UserSignupReq userSignupReq) {
+    public AuthResp register(UserSignupReq userSignupReq) {
         if (userSignupReq.getEmail() == null || userSignupReq.getEmail().isEmpty()) {
-            throw new BadCredentialsException("EMAIL_REQ");
+            throw new BadRequestException("EMAIL_REQ");
         }
 
         if (userSignupReq.getUsername() == null || userSignupReq.getUsername().isEmpty()) {
-            throw new BadCredentialsException("USERNAME_REQ");
+            throw new BadRequestException("USERNAME_REQ");
         }
 
         if (userSignupReq.getPassword() == null || userSignupReq.getPassword().isEmpty()) {
-            throw new BadCredentialsException("PASSWORD_REQ");
+            throw new BadRequestException("PASSWORD_REQ");
         }
 
         User user = MAPPER.toUser(userSignupReq);
@@ -57,20 +56,20 @@ public class AuthServiceImpl implements AuthService {
         user.setLastLogin(new Calendar.Builder().setInstant(new Date()).build());
 
         String jwt = jwtService.generateToken(user);
-        UserResp userResp;
+        AuthResp authResp;
 
         try {
-            userResp= MAPPER.toUserResp(userRepository.save(user));
+            authResp = MAPPER.toAuthResp(userRepository.save(user));
         } catch (DataIntegrityViolationException e) {
             throw new EntityExistsException("USER_EXISTS");
         }
 
-        userResp.setJwt(jwt);
-        return userResp;
+        authResp.setJwt(jwt);
+        return authResp;
     }
 
     @Override
-    public UserResp login(UserLoginReq userLoginReq) {
+    public AuthResp login(UserLoginReq userLoginReq) {
         User user;
 
         if (userLoginReq.getEmail() == null || userLoginReq.getEmail().isEmpty()) {
@@ -104,10 +103,10 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String jwt = jwtService.generateToken(user);
-        UserResp userResp = MAPPER.toUserResp(user);
-        userResp.setJwt(jwt);
+        AuthResp authResp = MAPPER.toAuthResp(user);
+        authResp.setJwt(jwt);
 
-        return userResp;
+        return authResp;
     }
 
     @Override
