@@ -31,5 +31,6 @@ public class Saved {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "question_id", nullable = false)
+    @Audited(targetAuditMode = NOT_AUDITED)
     private Question question;
 }
