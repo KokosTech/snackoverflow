@@ -5,9 +5,8 @@
 package tech.kaloyan.snackoverflow.service;
 
 import tech.kaloyan.snackoverflow.resources.req.UserSignupReq;
-import tech.kaloyan.snackoverflow.resources.resp.UserAccountResp;
+import tech.kaloyan.snackoverflow.resources.resp.*;
 import tech.kaloyan.snackoverflow.entity.User;
-import tech.kaloyan.snackoverflow.resources.resp.UserResp;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,4 +22,8 @@ public interface UserService {
     UserResp save(UserSignupReq user);
     UserResp update(String id, UserSignupReq user, User currentUser);
     void delete(String id, User currentUser);
+
+    List<QuestionResp> getUserQuestions(String id);
+    List<CommentResp> getUserComments(String id);
+    List<ReplyResp> getUserReplies(String id);
 }

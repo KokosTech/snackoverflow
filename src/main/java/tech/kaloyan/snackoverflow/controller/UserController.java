@@ -6,14 +6,14 @@ package tech.kaloyan.snackoverflow.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
-import tech.kaloyan.snackoverflow.entity.User;
 import tech.kaloyan.snackoverflow.resources.req.UserSignupReq;
+import tech.kaloyan.snackoverflow.resources.resp.*;
 import tech.kaloyan.snackoverflow.service.AuthService;
 import tech.kaloyan.snackoverflow.service.UserService;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -24,77 +24,33 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUser(@PathVariable String id) {
-        try {
-            User currentUser = authService.getUser();
-
-            if (!currentUser.getId().equals(id)) {
-                return ResponseEntity.ok(userService.getById(id));
-            }
-
-            return ResponseEntity.ok(userService.getUserById(id));
-        } catch (RuntimeException e) {
-            if (e.getMessage().equals("User does not exist")) {
-                return ResponseEntity.notFound().build();
-            }
-
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Optional<UserAccountResp>> getUser(@PathVariable String id) {
+        return ResponseEntity.ok(userService.getById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable String id, @Valid @RequestBody UserSignupReq userSignupReq) {
-        try {
-            return ResponseEntity.ok(userService.update(id, userSignupReq, authService.getUser()));
-        } catch (RuntimeException e) {
-            if (e.getMessage().equals("User does not exist")) {
-                return ResponseEntity.notFound().build();
-            }
-
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<UserResp> updateUser(@PathVariable String id, @Valid @RequestBody UserSignupReq userSignupReq) {
+        return ResponseEntity.ok(userService.update(id, userSignupReq, authService.getUser()));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable String id) {
-        try {
-            userService.delete(id, authService.getUser());
-            return ResponseEntity.ok().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Void> deleteUser(@PathVariable String id) {
+        userService.delete(id, authService.getUser());
+        return ResponseEntity.ok().build();
     }
-
-    // get Questions
 
     @GetMapping("/{id}/questions")
-    public ResponseEntity<?> getUserQuestions(@PathVariable String id) {
-        try {
-            return ResponseEntity.ok(userService.getUserById(id).isPresent() ? userService.getUserById(id).get().getQuestions() : null);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<List<QuestionResp>> getUserQuestions(@PathVariable String id) {
+        return ResponseEntity.ok().body(userService.getUserQuestions(id));
     }
-
-    // get Comments
 
     @GetMapping("/{id}/comments")
-    public ResponseEntity<?> getUserComments(@PathVariable String id) {
-        try {
-            return ResponseEntity.ok(userService.getUserById(id).isPresent() ? userService.getUserById(id).get().getComments() : null);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<List<CommentResp>> getUserComments(@PathVariable String id) {
+        return ResponseEntity.ok().body(userService.getUserComments(id));
     }
 
-    // get Replies
-
     @GetMapping("/{id}/replies")
-    public ResponseEntity<?> getUserReplies(@PathVariable String id) {
-        try {
-            return ResponseEntity.ok(userService.getUserById(id).isPresent() ? userService.getUserById(id).get().getReply() : null);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<List<ReplyResp>> getUserReplies(@PathVariable String id) {
+        return ResponseEntity.ok().body(userService.getUserReplies(id));
     }
 }

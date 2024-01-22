@@ -22,9 +22,12 @@ import java.util.function.Function;
 
 @Service
 public class JWTServiceImpl implements JWTService {
-    //    get secret from application.properties
+    private static String SECRET_KEY;
+
     @Value("${jwt.secret-key}")
-    final private static String SECRET_KEY = "Ddsfi293675S6B5Dsdfnk28qdnq9nd021226452948404D6251655468576D5A7134743777217A25432A462D4A614E645266556A586E3272357538782F413F4428";
+    public void setSecretKey(String secretKey) {
+        SECRET_KEY = secretKey;
+    }
 
 
     @Override

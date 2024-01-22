@@ -21,6 +21,7 @@ public interface UserMapper {
     UserAccountResp toUserAccountResp(User user);
 
     UserResp toUserResp(User user);
+    AuthResp toAuthResp(User user);
 
     @Mapping(target = "lastLogin", expression = "java(user.getLastLogin().getTime().toString())")
     @Mapping(target = "questions", expression = "java(getQuestions(user))")

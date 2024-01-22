@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. Kaloyan Doychinov
+ * Copyright (c) 2023. Kaloyan Doychinov
  */
 
 package tech.kaloyan.snackoverflow.resources.resp;
@@ -7,8 +7,9 @@ package tech.kaloyan.snackoverflow.resources.resp;
 import lombok.Data;
 
 @Data
-public class UserResp {
+public class AuthResp {
     private String id;
     private String username;
     private String email;
+    private String jwt;
 }

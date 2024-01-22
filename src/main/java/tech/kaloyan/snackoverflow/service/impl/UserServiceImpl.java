@@ -11,11 +11,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tech.kaloyan.snackoverflow.entity.User;
 import tech.kaloyan.snackoverflow.exeception.NotAuthorizedException;
+import tech.kaloyan.snackoverflow.mapper.CommentMapper;
+import tech.kaloyan.snackoverflow.mapper.QuestionMapper;
+import tech.kaloyan.snackoverflow.mapper.ReplyMapper;
 import tech.kaloyan.snackoverflow.repository.UserRepository;
 import tech.kaloyan.snackoverflow.resources.req.UserSignupReq;
-import tech.kaloyan.snackoverflow.resources.resp.UserAccountResp;
-import tech.kaloyan.snackoverflow.resources.resp.UserResp;
-import tech.kaloyan.snackoverflow.service.JWTService;
+import tech.kaloyan.snackoverflow.resources.resp.*;
 import tech.kaloyan.snackoverflow.service.UserService;
 
 import java.util.List;
@@ -67,7 +68,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResp update(String id, UserSignupReq user, User currentUser){
+    public UserResp update(String id, UserSignupReq user, User currentUser) {
         if (!id.equals(currentUser.getId())) {
             throw new NotAuthorizedException("User is not authorized to update another user");
         }
@@ -76,7 +77,7 @@ public class UserServiceImpl implements UserService {
                 () -> new EntityNotFoundException("User with id " + id + " not found")
         );
 
-        if(user.getUsername() != null && !user.getUsername().isEmpty()) {
+        if (user.getUsername() != null && !user.getUsername().isEmpty()) {
             userToUpdate.setUsername(user.getUsername());
         }
 
@@ -84,7 +85,7 @@ public class UserServiceImpl implements UserService {
             userToUpdate.setEmail(user.getEmail());
         }
 
-        if(user.getPassword() != null && !user.getPassword().isEmpty()) {
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             userToUpdate.setPasshash(passwordEncoder.encode(user.getPassword()));
         }
 
@@ -98,5 +99,38 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public List<QuestionResp> getUserQuestions(String id) {
+        Optional<User> user = this.getUserById(id);
+
+        if (user.isPresent()) {
+            return QuestionMapper.MAPPER.toQuestionResps(user.get().getQuestions());
+        } else {
+            throw new EntityNotFoundException("User with id " + id + " not found");
+        }
+    }
+
+    @Override
+    public List<CommentResp> getUserComments(String id) {
+        Optional<User> user = this.getUserById(id);
+
+        if (user.isPresent()) {
+            return CommentMapper.MAPPER.toCommentResps(user.get().getComments());
+        } else {
+            throw new EntityNotFoundException("User with id " + id + " not found");
+        }
+    }
+
+    @Override
+    public List<ReplyResp> getUserReplies(String id) {
+        Optional<User> user = this.getUserById(id);
+
+        if (user.isPresent()) {
+            return ReplyMapper.MAPPER.toReplyResps(user.get().getReply());
+        } else {
+            throw new EntityNotFoundException("User with id " + id + " not found");
+        }
     }
 }
