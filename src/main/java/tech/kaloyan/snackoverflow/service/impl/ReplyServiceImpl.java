@@ -19,6 +19,7 @@ import tech.kaloyan.snackoverflow.resources.req.ReplyReq;
 import tech.kaloyan.snackoverflow.resources.resp.CommentResp;
 import tech.kaloyan.snackoverflow.resources.resp.ReplyResp;
 import tech.kaloyan.snackoverflow.service.ReplyService;
+import tech.kaloyan.snackoverflow.service.UserService;
 
 import java.util.*;
 
@@ -31,6 +32,7 @@ public class ReplyServiceImpl implements ReplyService {
     private final EntityManagerFactory entityManagerFactory;
     private final ReplyRepository replyRepository;
     private final CommentServiceImpl commentService;
+    private final UserService userService;
 
     @Override
     public List<ReplyResp> getAll() {
@@ -58,6 +60,15 @@ public class ReplyServiceImpl implements ReplyService {
         List<Reply> replies = new ArrayList<>();
         for (Number idRev : revisions) {
             Reply reply = auditReader.find(Reply.class, id, idRev);
+            User author = reply.getAuthor();
+
+            if (author != null) {
+                Optional<User> authorDb = userService.getUserById(
+                        reply.getAuthor().getId()
+                );
+
+                authorDb.ifPresent(reply::setAuthor);
+            }
             replies.add(reply);
         }
         return MAPPER.toReplyResps(replies);

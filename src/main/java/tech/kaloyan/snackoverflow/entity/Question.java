@@ -46,6 +46,7 @@ public class Question {
 
     @Column(nullable = false)
     private Date validFrom;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "author_id", nullable = false)
     private User author;

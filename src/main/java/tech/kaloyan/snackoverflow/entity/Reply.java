@@ -35,18 +35,15 @@ public class Reply {
     @Column(nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastModified;
-    @EqualsAndHashCode.Exclude
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "author_id", nullable = false)
-    @Audited(targetAuditMode = NOT_AUDITED)
-    @NotAudited
     private User author;
-    @EqualsAndHashCode.Exclude
+
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "comment_id", nullable = true)
-    @Audited(targetAuditMode = NOT_AUDITED)
-    @NotAudited
     private Comment comment;
+
     @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "reply_id", nullable = true)
